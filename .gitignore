@@ -5,3 +5,4 @@
 /test/artifacts
 /test/ffi/rust/artifacts
 **/target/
+.DS_Store
