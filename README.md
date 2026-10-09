@@ -91,9 +91,6 @@ and cancellation can still interrupt a composed arrow, so a resource adapter
 must provide its own finalization and native safeguards. The library does not
 promise successful settlement on every execution or exactly-once business work.
 
-The [b8x integration notes](test/ffi/B8X.md) distinguish the reusable library
-from its application adapter and link the real broker tests.
-
 ## Do notation with hidden resources
 
 `Data.Function.Sub.Aff.Do` supplies `Program before after a`: an effectful
