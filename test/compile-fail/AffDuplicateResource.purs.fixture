@@ -1,0 +1,9 @@
+module Test.CompileFail.AffDuplicateResource where
+
+import Prelude (Unit)
+
+import Data.Function.Sub.Aff (Pair, SubAff, tensor)
+import Test.CompilePass.AffBoundary (Resource, consume)
+
+bad :: SubAff Resource (Pair Unit Unit)
+bad = tensor consume consume

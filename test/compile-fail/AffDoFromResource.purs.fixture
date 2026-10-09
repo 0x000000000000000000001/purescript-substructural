@@ -1,0 +1,10 @@
+module Test.CompileFail.AffDoFromResource where
+
+import Prelude
+import Data.Function.Sub.Aff (Pair, swap)
+import Test.Support.AffDoProtocol (Resource)
+import Data.Function.Sub.Aff.Do (Program)
+import Data.Function.Sub.Aff.Do as Do
+
+bad :: Program (Pair Resource Unit) Unit Resource
+bad = Do.fromArrow swap

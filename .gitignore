@@ -1,2 +1,7 @@
 /bower_components
 /output
+/.spago
+/node_modules
+/test/artifacts
+/test/ffi/rust/artifacts
+**/target/

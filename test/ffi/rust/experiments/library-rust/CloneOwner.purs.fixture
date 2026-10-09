@@ -1,0 +1,6 @@
+module LibraryRust.CloneOwner where
+import Data.Function.Sub (type (-*), clone)
+import Data.Tuple (Tuple)
+import LibraryRust.Owned (Owner)
+bad :: Owner -* Tuple Owner Owner
+bad = clone

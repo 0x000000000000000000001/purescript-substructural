@@ -1,0 +1,7 @@
+module Test.CompileFail.UnwrapSub where
+
+import Data.Function.Sub (Sub)
+import Data.Newtype (unwrap)
+
+bad :: Sub Int Int -> (Int -> Int)
+bad = unwrap

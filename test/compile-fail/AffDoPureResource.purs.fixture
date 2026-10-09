@@ -1,0 +1,9 @@
+module Test.CompileFail.AffDoPureResource where
+
+import Prelude
+import Data.Function.Sub.Aff.Do (Program)
+import Data.Function.Sub.Aff.Do as Do
+import Test.Support.AffDoProtocol (Resource)
+
+bad :: Resource -> Program Unit Unit Resource
+bad = Do.pure

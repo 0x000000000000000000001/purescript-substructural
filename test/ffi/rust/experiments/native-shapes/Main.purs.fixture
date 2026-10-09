@@ -1,0 +1,84 @@
+module LinearLab.NativeShapes.Main where
+
+import Prelude
+import Data.Either (Either(..))
+import Data.Maybe (Maybe(..))
+import Effect (Effect)
+import Effect.Exception (throw)
+import LinearLab.NativeShapes.Cursor as C
+import LinearLab.NativeShapes.EscapedEffect (deferred)
+
+foreign import assertCounts :: Int -> Int -> Int -> Effect Unit
+foreign import pass :: String -> Effect Unit
+foreign import done :: Effect Unit
+
+expect :: Either String (Maybe Int) -> Either String (Maybe Int) -> Effect Unit
+expect wanted actual = unless (wanted == actual) (throw ("Unexpected cursor result: " <> show actual))
+
+main :: Effect Unit
+main = do
+  cursor <- C.wide "7,11"
+  assertCounts 1 0 0
+  let alias = cursor
+  let action = C.next alias
+  first <- action
+  expect (Right (Just 7)) first
+  second <- action
+  expect (Right (Just 11)) second
+  assertCounts 1 0 2
+  ended <- C.next cursor
+  expect (Right Nothing) ended
+  assertCounts 1 1 2
+  again <- action
+  expect (Left "cursor closed") again
+  C.close cursor
+  assertCounts 1 1 2
+  pass "Box dyn iterator payloads 7,11; replay advances; end drops once"
+
+  empty <- C.wide ""
+  assertCounts 2 1 2
+  absent <- C.next empty
+  expect (Right Nothing) absent
+  assertCounts 2 2 2
+  pass "Option None remains distinct from error and drops empty iterator"
+
+  invalid <- C.wide "5,not-a-number,9"
+  good <- C.next invalid
+  expect (Right (Just 5)) good
+  assertCounts 3 2 3
+  failed <- C.next invalid
+  expect (Left "invalid item 'not-a-number': invalid digit found in string") failed
+  assertCounts 3 3 4
+  stopped <- C.next invalid
+  expect (Left "cursor closed") stopped
+  pass "real ParseIntError payload survives; unvisited 9 is never read"
+
+  bounded <- C.small "255,256,1"
+  boundary <- C.next bounded
+  expect (Right (Just 255)) boundary
+  overflow <- C.next bounded
+  expect (Left "invalid item '256': number too large to fit in target type") overflow
+  assertCounts 4 4 6
+  afterOverflow <- C.next bounded
+  expect (Left "cursor closed") afterOverflow
+  pass "same generic parser instantiated for u8 reports genuine overflow"
+
+  unused <- C.wide "13,17"
+  assertCounts 5 4 6
+  C.close unused
+  C.close unused
+  assertCounts 5 5 6
+  closed <- C.next unused
+  expect (Left "cursor closed") closed
+  pass "early and repeated close release non-Clone iterator resource once"
+
+  escaped <- deferred "-8"
+  assertCounts 6 5 6
+  negative <- escaped
+  expect (Right (Just (-8))) negative
+  assertCounts 6 5 7
+  exhausted <- escaped
+  expect (Right Nothing) exhausted
+  assertCounts 6 6 7
+  pass "escaped Effect keeps ownership and later releases it at exhaustion"
+  done

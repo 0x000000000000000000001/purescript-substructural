@@ -1,0 +1,6 @@
+module LinearLab.ThreadAffinity.DirectEscape where
+
+import Effect (Effect)
+import LinearLab.ThreadAffinity.Api as L
+bad :: forall region. Effect (L.Handle region)
+bad = L.withOwner 1 \handle -> L.pure handle

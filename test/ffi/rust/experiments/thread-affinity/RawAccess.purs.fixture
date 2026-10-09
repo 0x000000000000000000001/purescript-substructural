@@ -1,0 +1,3 @@
+module LinearLab.ThreadAffinity.RawAccess where
+
+import LinearLab.ThreadAffinity.Api (rawRead)

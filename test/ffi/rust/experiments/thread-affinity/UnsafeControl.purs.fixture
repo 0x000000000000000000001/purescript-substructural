@@ -1,0 +1,7 @@
+module LinearLab.ThreadAffinity.UnsafeControl where
+
+import Effect (Effect)
+import Unsafe.Coerce (unsafeCoerce)
+import LinearLab.ThreadAffinity.Api as L
+unsafeEffect :: forall region. L.Handle region -> Effect Int
+unsafeEffect handle = unsafeCoerce (L.read handle)

@@ -1,0 +1,10 @@
+module Test.CompileFail.AffCoerceInput where
+
+import Prelude
+import Data.Function.Sub.Aff (SubAff)
+import Safe.Coerce (coerce)
+
+newtype Wrapped = Wrapped Int
+
+bad :: SubAff Int Unit -> SubAff Wrapped Unit
+bad = coerce

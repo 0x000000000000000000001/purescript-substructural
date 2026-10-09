@@ -1,0 +1,9 @@
+module LinearLab.AdvancedBorrows.SharedChildEscape where
+import Prelude
+import Effect (Effect)
+import LinearLab.AdvancedBorrows.Api as B
+
+bad :: Effect Int
+bad = B.withBuffer "abcd" \buffer -> B.withRead buffer \_ -> B.do
+  child <- B.withRead buffer B.pure
+  B.checksum child

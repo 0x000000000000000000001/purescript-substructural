@@ -1,0 +1,22 @@
+module LinearLab.AdvancedBorrows.Main where
+import Prelude
+import Effect (Effect)
+import LinearLab.AdvancedBorrows.Api (Ready)
+import LinearLab.AdvancedBorrows.Nested as Nested
+import LinearLab.AdvancedBorrows.Mutable as Mutable
+import LinearLab.AdvancedBorrows.Unwind as Unwind
+
+type AdapterDependency = Ready
+foreign import check :: String -> Int -> Int -> Effect Unit
+foreign import verify :: Effect Unit
+main :: Effect Unit
+main = do
+  nested <- Nested.program
+  check "nested shared plus returned native subview" 1873 nested
+  mutable <- Mutable.program
+  check "mutable reborrow and split halves" 1737 mutable
+  replay <- Mutable.program
+  check "outer Effect replay creates fresh owner" 1737 replay
+  unwound <- Unwind.program
+  check "parent and root restored after exception" 268 unwound
+  verify

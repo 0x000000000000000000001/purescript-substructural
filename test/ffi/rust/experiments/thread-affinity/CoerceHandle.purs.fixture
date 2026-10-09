@@ -1,0 +1,6 @@
+module LinearLab.ThreadAffinity.CoerceHandle where
+
+import Safe.Coerce (coerce)
+import LinearLab.ThreadAffinity.Api as L
+bad :: forall a b. L.Handle a -> L.Handle b
+bad = coerce

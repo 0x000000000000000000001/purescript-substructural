@@ -1,0 +1,3 @@
+module Test.CompileFail.AffPairConstructor where
+
+import Data.Function.Sub.Aff.Unsafe (Pair(Pair))

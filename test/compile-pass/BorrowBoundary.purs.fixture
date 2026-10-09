@@ -1,0 +1,20 @@
+module Test.CompilePass.BorrowBoundary where
+
+import Prelude
+import Data.Array.Unique as U
+import Data.Function.Sub (type (-*), Borrow, borrow, fst', runShared)
+import Data.Tuple (Tuple)
+
+-- A unique owner is threaded through borrowing; only a Shared Int result
+-- accompanies it. Dropping that Int permits converting the owner back.
+inspectAndReturn :: Array Int -> Array Int
+inspectAndReturn = runShared
+  (U.toShared <<< fst' <<< borrow U.length <<< U.fromShared)
+
+-- Shared owners permit Shared borrow results to escape this combinator.
+-- This is intentionally accepted; Borrow is not a universal no-escape scope.
+sharedBorrow :: Int -* Tuple Int (Borrow Int)
+sharedBorrow = borrow identity
+
+runSharedBorrow :: Int -> Tuple Int (Borrow Int)
+runSharedBorrow = runShared sharedBorrow

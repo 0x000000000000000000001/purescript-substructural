@@ -1,0 +1,158 @@
+{
+  "name": "advanced-borrows",
+  "description": "Nested shared borrows, exclusive mutable reborrows and disjoint native views with indexed region wrappers.",
+  "cases": [
+    {
+      "module": "LinearLab.AdvancedBorrows.Nested",
+      "expect": "accept",
+      "reason": "Nested shared borrows retain access to their ancestors and returned subviews."
+    },
+    {
+      "module": "LinearLab.AdvancedBorrows.WriteDuringRead",
+      "expect": "reject",
+      "codes": [
+        "TypesDoNotUnify"
+      ],
+      "reason": "A shared read phase cannot acquire a mutable owner."
+    },
+    {
+      "module": "LinearLab.AdvancedBorrows.Mutable",
+      "expect": "accept",
+      "reason": "A mutable parent is restored after scoped reborrow and disjoint split views."
+    },
+    {
+      "module": "LinearLab.AdvancedBorrows.Unwind",
+      "expect": "accept",
+      "reason": "State-preserving exception capture permits cleanup and restoring parent/root."
+    },
+    {
+      "module": "LinearLab.AdvancedBorrows.Existential",
+      "expect": "accept",
+      "reason": "Inert existential storage is accepted; it does not confer permission to execute indexed access."
+    },
+    {
+      "module": "LinearLab.AdvancedBorrows.ReadDuringWrite",
+      "expect": "reject",
+      "codes": [
+        "NoInstanceFound"
+      ],
+      "reason": "Shared acquisition is unavailable in a Writing phase."
+    },
+    {
+      "module": "LinearLab.AdvancedBorrows.ParentDuringReborrow",
+      "expect": "reject",
+      "codes": [
+        "TypesDoNotUnify",
+        "EscapedSkolem"
+      ],
+      "reason": "A mutable parent is suspended while its child token is active."
+    },
+    {
+      "module": "LinearLab.AdvancedBorrows.SiblingDuringReborrow",
+      "expect": "reject",
+      "codes": [
+        "TypesDoNotUnify",
+        "EscapedSkolem"
+      ],
+      "reason": "Conservative limit: reborrowing either split half suspends the whole parent phase, including its sibling."
+    },
+    {
+      "module": "LinearLab.AdvancedBorrows.MutableEscape",
+      "expect": "reject",
+      "codes": [
+        "TypesDoNotUnify",
+        "EscapedSkolem"
+      ],
+      "reason": "A mutable scope/token cannot escape directly."
+    },
+    {
+      "module": "LinearLab.AdvancedBorrows.SharedChildEscape",
+      "expect": "reject",
+      "codes": [
+        "TypesDoNotUnify",
+        "EscapedSkolem"
+      ],
+      "reason": "A nested shared view cannot be read after its own lease ended even while an ancestor survives."
+    },
+    {
+      "module": "LinearLab.AdvancedBorrows.ReturnedViewEscape",
+      "expect": "reject",
+      "codes": [
+        "TypesDoNotUnify",
+        "EscapedSkolem"
+      ],
+      "reason": "Wrapping a native returned reference does not remove its region/lease indices."
+    },
+    {
+      "module": "LinearLab.AdvancedBorrows.DeferredWrite",
+      "expect": "reject",
+      "codes": [
+        "TypesDoNotUnify",
+        "EscapedSkolem"
+      ],
+      "reason": "A saved mutable action retains the expired child token."
+    },
+    {
+      "module": "LinearLab.AdvancedBorrows.ReviveExistential",
+      "expect": "reject",
+      "codes": [
+        "TypesDoNotUnify",
+        "EscapedSkolem"
+      ],
+      "reason": "A packed old writer cannot obtain a fresh writer capability."
+    },
+    {
+      "module": "LinearLab.AdvancedBorrows.CoerceWrite",
+      "expect": "reject",
+      "codes": [
+        "TypesDoNotUnify",
+        "NoInstanceFound"
+      ],
+      "reason": "Nominal roles prohibit retagging a mutable view."
+    },
+    {
+      "module": "LinearLab.AdvancedBorrows.CoerceAction",
+      "expect": "reject",
+      "codes": [
+        "TypesDoNotUnify",
+        "NoInstanceFound"
+      ],
+      "reason": "Nominal state indices prohibit unlifting an operation to Ready."
+    },
+    {
+      "module": "LinearLab.AdvancedBorrows.ParentReadMutation",
+      "expect": "reject",
+      "codes": [
+        "TypesDoNotUnify"
+      ],
+      "reason": "parentRead cannot lift a Ready or mutable action as an ancestor read."
+    },
+    {
+      "module": "LinearLab.AdvancedBorrows.ForgeReadable",
+      "expect": "reject",
+      "codes": [
+        "OrphanInstance"
+      ],
+      "reason": "Clients cannot add an orphan instance making the library Writing phase Readable."
+    },
+    {
+      "module": "LinearLab.AdvancedBorrows.RawRunner",
+      "expect": "reject",
+      "codes": [
+        "UnknownImportDataConstructor",
+        "UnknownName"
+      ],
+      "reason": "The effect representation remains hidden."
+    }
+  ],
+  "executions": [
+    {
+      "module": "LinearLab.AdvancedBorrows.Main",
+      "marker": "ADVANCED_BORROWS_OK",
+      "modes": [
+        "normal",
+        "threaded"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+module Test.CompilePass.AffBoundary where
+
+import Prelude
+import Data.Function.Sub as Pure
+import Data.Function.Sub.Aff (Pair, SubAff, fromShared, liftShared, runShared, tensor)
+import Data.Function.Sub.Aff.Unsafe as Unsafe
+import Data.Tuple (Tuple(..))
+import Effect (Effect)
+import Effect.Aff (Aff)
+import Effect.Class (liftEffect)
+import Safe.Coerce (coerce)
+
+-- Trusted adapter signatures; the fixture is compiled, never executed.
+foreign import data Resource :: Type
+foreign import allocate :: Effect Resource
+foreign import release :: Resource -> Effect Unit
+
+acquire :: SubAff Unit Resource
+acquire = Unsafe.unsafeFromFunction \_ -> liftEffect allocate
+
+consume :: SubAff Resource Unit
+consume = Unsafe.unsafeFromFunction (liftEffect <<< release)
+
+scoped :: Aff Unit
+scoped = runShared (acquire >>> consume) unit
+
+shared :: Int -> Aff Int
+shared = runShared (liftShared (pure <<< (_ + 1)))
+
+fromPure :: Int -> Aff Int
+fromPure = runShared (fromShared (Pure.liftShared (_ + 2)))
+
+-- The trusted adapter can construct and destructure the opaque product.
+trustedProduct :: Resource -> Resource -> Aff (Tuple Unit Unit)
+trustedProduct left right = Unsafe.unsafeUnpair <$>
+  Unsafe.unsafeRun (tensor consume consume) (Unsafe.unsafePair left right)
+
+newtype Wrapped = Wrapped Int
+
+coerceControl :: Int -> Wrapped
+coerceControl = coerce

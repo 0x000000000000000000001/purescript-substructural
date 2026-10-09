@@ -1,0 +1,10 @@
+module Test.CompileFail.AffDoLiftResource where
+
+import Prelude
+import Effect.Aff (Aff)
+import Test.Support.AffDoProtocol (Resource)
+import Data.Function.Sub.Aff.Do (Program)
+import Data.Function.Sub.Aff.Do as Do
+
+bad :: Aff Resource -> Program Unit Unit Resource
+bad = Do.liftAff

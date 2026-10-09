@@ -1,0 +1,19 @@
+module LinearLab.NativeShapes.Cursor (Cursor, wide, small, next, close) where
+
+import Prelude
+import Data.Either (Either(..))
+import Data.Maybe (Maybe(..))
+import Effect (Effect)
+
+foreign import data Cursor :: Type
+foreign import wide :: String -> Effect Cursor
+foreign import small :: String -> Effect Cursor
+foreign import close :: Cursor -> Effect Unit
+
+-- The native adapter chooses one real Rust Result/Option branch. The values
+-- are built with actual PS constructors, keeping payload/error information.
+foreign import rawNext :: forall result.
+  (String -> result) -> result -> (Int -> result) -> Cursor -> Effect result
+
+next :: Cursor -> Effect (Either String (Maybe Int))
+next cursor = rawNext Left (Right Nothing) (\value -> Right (Just value)) cursor

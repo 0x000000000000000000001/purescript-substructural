@@ -1,0 +1,4 @@
+module LinearLab.AdvancedBorrows.ForgeReadable where
+import LinearLab.AdvancedBorrows.Api as B
+
+instance forged :: B.Readable (B.Writing token)

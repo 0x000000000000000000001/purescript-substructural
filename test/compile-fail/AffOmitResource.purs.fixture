@@ -1,0 +1,8 @@
+module Test.CompileFail.AffOmitResource where
+
+import Prelude
+import Data.Function.Sub.Aff (SubAff, liftShared)
+import Test.CompilePass.AffBoundary (Resource)
+
+bad :: SubAff Resource Unit
+bad = liftShared (\_ -> pure unit)

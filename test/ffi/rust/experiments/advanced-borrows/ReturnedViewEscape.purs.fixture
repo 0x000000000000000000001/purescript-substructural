@@ -1,0 +1,6 @@
+module LinearLab.AdvancedBorrows.ReturnedViewEscape where
+import Effect (Effect)
+import LinearLab.AdvancedBorrows.Api as B
+
+bad :: forall scope token. Effect (B.ReadView scope token)
+bad = B.withBuffer "abcd" \buffer -> B.withRead buffer B.tailView

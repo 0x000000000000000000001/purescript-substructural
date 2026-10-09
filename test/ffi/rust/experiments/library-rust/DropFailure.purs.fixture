@@ -1,0 +1,19 @@
+module LibraryRust.DropFailure (verify) where
+
+import Prelude (Unit)
+import Effect (Effect)
+import Data.Array.Unique (UniqueArray)
+import Data.Function.Sub (class Drop, type (-*), drop)
+
+foreign import data FailureOwner :: Type
+foreign import failingDrop :: FailureOwner -* Unit
+
+instance dropFailureOwner :: Drop FailureOwner where
+  drop = failingDrop
+
+-- The observer performs all allocation, execution and exception capture inside
+-- Effect. The supplied dictionary is the real UniqueArray Drop implementation.
+foreign import verifyImpl :: (UniqueArray FailureOwner -* Unit) -> Effect Unit
+
+verify :: Effect Unit
+verify = verifyImpl drop

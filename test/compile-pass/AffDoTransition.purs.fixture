@@ -1,0 +1,11 @@
+module Test.CompilePass.AffDoTransition where
+
+import Test.Support.AffDoProtocol (Open, Closed, query, close)
+import Data.Function.Sub.Aff.Do (Program)
+import Data.Function.Sub.Aff.Do as Do
+
+accepted :: Program Open Closed Int
+accepted = Do.do
+  result <- query 10
+  close
+  Do.pure result

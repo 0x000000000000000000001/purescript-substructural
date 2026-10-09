@@ -1,0 +1,3 @@
+module LinearLab.ThreadAffinity.Unwrap where
+
+import LinearLab.ThreadAffinity.Api (Local(Local))

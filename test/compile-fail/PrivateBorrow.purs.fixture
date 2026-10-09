@@ -1,0 +1,3 @@
+module Test.CompileFail.PrivateBorrow where
+
+import Data.Function.Sub (borrowFFI)

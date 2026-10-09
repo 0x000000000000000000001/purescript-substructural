@@ -1,0 +1,3 @@
+module Test.CompileFail.AffConstructor where
+
+import Data.Function.Sub.Aff.Unsafe (SubAff(SubAff))

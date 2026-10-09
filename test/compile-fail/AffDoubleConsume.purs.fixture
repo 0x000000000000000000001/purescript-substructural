@@ -1,0 +1,8 @@
+module Test.CompileFail.AffDoubleConsume where
+
+import Prelude
+import Data.Function.Sub.Aff (SubAff)
+import Test.CompilePass.AffBoundary (Resource, consume)
+
+bad :: SubAff Resource Unit
+bad = consume >>> consume

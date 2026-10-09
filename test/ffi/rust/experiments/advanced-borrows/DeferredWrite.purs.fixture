@@ -1,0 +1,9 @@
+module LinearLab.AdvancedBorrows.DeferredWrite where
+import Prelude
+import Effect (Effect)
+import LinearLab.AdvancedBorrows.Api as B
+
+bad :: Effect Unit
+bad = B.withBuffer "abcd" \buffer -> B.withWrite buffer \parent -> B.do
+  delayed <- B.reborrow parent 0 2 \child -> B.pure (B.fill child 65)
+  delayed

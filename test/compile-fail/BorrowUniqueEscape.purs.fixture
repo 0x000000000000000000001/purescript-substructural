@@ -1,0 +1,9 @@
+module Test.CompileFail.BorrowUniqueEscape where
+
+import Prelude
+import Data.Function.Sub (type (-*), Borrow, borrow)
+import Data.Array.Unique (UniqueArray)
+import Data.Tuple (Tuple)
+
+bad :: UniqueArray Int -* Tuple (UniqueArray Int) (Borrow (UniqueArray Int))
+bad = borrow identity

@@ -1,0 +1,7 @@
+module LinearLab.NativeShapes.ForgeCursor where
+import LinearLab.NativeShapes.Cursor (Cursor(..))
+
+-- Importing Cursor(..) alone is accepted for foreign data (there are no
+-- constructors). Actually trying to build one must fail.
+bad :: Cursor
+bad = Cursor

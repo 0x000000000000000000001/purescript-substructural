@@ -1,0 +1,9 @@
+module Test.CompileFail.DropTupleMissing where
+
+import Prelude
+import Data.Function.Sub (type (-*), drop)
+import Data.Tuple (Tuple)
+
+foreign import data Resource :: Type
+bad :: Tuple Int Resource -* Unit
+bad = drop

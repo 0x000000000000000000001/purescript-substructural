@@ -1,0 +1,7 @@
+module LibraryRust.CloneOwners where
+import Data.Array.Unique (UniqueArray)
+import Data.Function.Sub (type (-*), clone)
+import Data.Tuple (Tuple)
+import LibraryRust.Owned (Owner)
+bad :: UniqueArray Owner -* Tuple (UniqueArray Owner) (UniqueArray Owner)
+bad = clone

@@ -1,0 +1,9 @@
+module LinearLab.AsyncResources.AffNormal where
+
+import Prelude
+import Effect (Effect)
+import Effect.Aff (launchAff_)
+
+-- Isolates the existing Aff port from this suite's native resource adapter.
+main :: Effect Unit
+main = launchAff_ (pure unit)

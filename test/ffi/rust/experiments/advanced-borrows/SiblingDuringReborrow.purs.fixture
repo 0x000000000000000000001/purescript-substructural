@@ -1,0 +1,9 @@
+module LinearLab.AdvancedBorrows.SiblingDuringReborrow where
+import Prelude
+import Effect (Effect)
+import LinearLab.AdvancedBorrows.Api as B
+
+bad :: Effect Unit
+bad = B.withBuffer "abcd" \buffer -> B.withWrite buffer \parent ->
+  B.withSplit parent 2 \left right ->
+    B.reborrow left 0 1 \_ -> B.fill right 65

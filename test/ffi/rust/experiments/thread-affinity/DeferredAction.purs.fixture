@@ -1,0 +1,6 @@
+module LinearLab.ThreadAffinity.DeferredAction where
+
+import Effect (Effect)
+import LinearLab.ThreadAffinity.Api as L
+bad :: forall region. Effect (L.Local region Int)
+bad = L.withOwner 1 \handle -> L.pure (L.read handle)

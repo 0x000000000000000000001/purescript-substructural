@@ -1,0 +1,3 @@
+module Test.CompileFail.PrivateRun where
+
+import Data.Function.Sub (runSharedFFI)

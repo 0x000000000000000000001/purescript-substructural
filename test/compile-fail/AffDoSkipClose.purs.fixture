@@ -1,0 +1,8 @@
+module Test.CompileFail.AffDoSkipClose where
+
+import Test.Support.AffDoProtocol (Open, Closed, query)
+import Data.Function.Sub.Aff.Do (Program)
+
+-- A runner requiring a closed protocol cannot accept an open-ended query.
+bad :: Program Open Closed Int
+bad = query 10

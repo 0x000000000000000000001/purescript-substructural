@@ -1,0 +1,25 @@
+module Test.CompilePass.ConditionalInstances where
+
+import Prelude
+import Data.Function.Sub (class Clone, class Drop, type (-*), clone, drop, fst', snd')
+import Data.Tuple (Tuple)
+import Data.Array.Unique (UniqueArray)
+
+cloneTuple :: forall a b. Clone a => Clone b =>
+  Tuple a b -* Tuple (Tuple a b) (Tuple a b)
+cloneTuple = clone
+
+dropTuple :: forall a b. Drop a => Drop b => Tuple a b -* Unit
+dropTuple = drop
+
+cloneUnique :: forall a. Clone a => UniqueArray a -* Tuple (UniqueArray a) (UniqueArray a)
+cloneUnique = clone
+
+dropUnique :: forall a. Drop a => UniqueArray a -* Unit
+dropUnique = drop
+
+keepFirst :: forall a b. Drop b => Tuple a b -* a
+keepFirst = fst'
+
+keepSecond :: forall a b. Drop a => Tuple a b -* b
+keepSecond = snd'

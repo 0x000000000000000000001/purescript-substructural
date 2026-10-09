@@ -1,0 +1,13 @@
+module LinearLab.NativeShapes.ReplayAccepted where
+import Prelude
+import Data.Either (Either)
+import Data.Maybe (Maybe)
+import Effect (Effect)
+import LinearLab.NativeShapes.Cursor as C
+
+-- An accepted control: neither aliases nor replay are prohibited by PS.
+replay :: C.Cursor -> Effect (Either String (Maybe Int))
+replay cursor =
+  let alias = cursor
+      action = C.next alias
+  in action *> action

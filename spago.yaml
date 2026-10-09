@@ -1,0 +1,19 @@
+package:
+  name: substructural
+  dependencies:
+    - aff
+    - prelude
+    - tuples
+  test:
+    main: Test.Main
+    dependencies:
+      - console
+      - effect
+      - exceptions
+      - newtype
+      - refs
+      - safe-coerce
+      - unsafe-coerce
+workspace:
+  packageSet:
+    registry: 77.10.1

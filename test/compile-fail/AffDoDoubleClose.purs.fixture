@@ -1,0 +1,11 @@
+module Test.CompileFail.AffDoDoubleClose where
+
+import Prelude
+import Test.Support.AffDoProtocol (Open, Closed, close)
+import Data.Function.Sub.Aff.Do (Program)
+import Data.Function.Sub.Aff.Do as Do
+
+bad :: Program Open Closed Unit
+bad = Do.do
+  close
+  close

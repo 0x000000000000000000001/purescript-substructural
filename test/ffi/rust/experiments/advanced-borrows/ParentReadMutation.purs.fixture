@@ -1,0 +1,8 @@
+module LinearLab.AdvancedBorrows.ParentReadMutation where
+import Prelude
+import Effect (Effect)
+import LinearLab.AdvancedBorrows.Api as B
+
+bad :: Effect Unit
+bad = B.withBuffer "abcd" \buffer -> B.withRead buffer \_ ->
+  B.parentRead (B.withWrite buffer (\view -> B.fill view 65))

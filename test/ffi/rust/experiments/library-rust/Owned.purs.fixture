@@ -1,0 +1,14 @@
+module LibraryRust.Owned (Owner, make, readSize, verify) where
+
+import Data.Function.Sub (class Drop, type (-*), Borrow)
+import Effect (Effect)
+import Prelude (Unit)
+
+foreign import data Owner :: Type
+foreign import make :: Int -* Owner
+foreign import readSize :: Borrow Owner -* Int
+foreign import destroy :: Owner -* Unit
+foreign import verify :: Effect Unit
+
+instance dropOwner :: Drop Owner where
+  drop = destroy

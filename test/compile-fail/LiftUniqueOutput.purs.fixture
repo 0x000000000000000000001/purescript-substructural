@@ -1,0 +1,8 @@
+module Test.CompileFail.LiftUniqueOutput where
+
+import Prelude
+import Data.Function.Sub (type (-*), liftShared)
+import Data.Array.Unique (UniqueArray)
+
+bad :: UniqueArray Int -> (Unit -* UniqueArray Int)
+bad value = liftShared (\_ -> value)

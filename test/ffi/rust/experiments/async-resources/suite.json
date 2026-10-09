@@ -1,0 +1,12 @@
+{
+  "name": "async-resources",
+  "description": "Real native Future cancellation and bracket cleanup through PureScript Aff.",
+  "hook": "hook.mjs",
+  "cases": [
+    { "module": "LinearLab.AsyncResources.Main", "expect": "accept", "reason": "An ordinary Aff program invokes native asynchronous Rust through makeAff." },
+    { "module": "LinearLab.AsyncResources.AffNormal", "expect": "accept", "reason": "Minimal Aff input is accepted by PureScript; a separate hook records the installed port's normal-mode Rust build failure." }
+  ],
+  "executions": [
+    { "module": "LinearLab.AsyncResources.Main", "marker": "ASYNC_RESOURCES_OK", "modes": ["threaded"] }
+  ]
+}

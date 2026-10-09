@@ -1,0 +1,17 @@
+module LinearLab.AdvancedBorrows.Nested where
+
+import Prelude
+import Effect (Effect)
+import LinearLab.AdvancedBorrows.Api as B
+
+program :: Effect Int
+program = B.withBuffer "abcd" \buffer -> B.withRead buffer \outer -> B.do
+  first <- B.checksum outer
+  inner <- B.withRead buffer \view -> B.do
+    current <- B.checksum view
+    parent <- B.parentRead (B.checksum outer)
+    returned <- B.tailView view
+    tail <- B.checksum returned
+    B.pure (current + parent + tail)
+  last <- B.checksum outer
+  B.pure (first + inner + last)

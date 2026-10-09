@@ -1,0 +1,34 @@
+module Test.Support.AffDoProtocol
+  ( Resource, Open, Closed
+  , query, close, queryBoth, closeFirst
+  ) where
+
+import Prelude
+import Data.Function.Sub.Aff (Pair)
+import Data.Function.Sub.Aff.Do (Program)
+import Data.Function.Sub.Aff.Do as Do
+import Data.Function.Sub.Aff.Unsafe as Unsafe
+import Data.Tuple (Tuple(..))
+
+-- A trusted compile-only adapter. Its resource constructors are private and
+-- none of these types has Clone, Drop or Shared instances.
+data Resource = Resource
+data Open = Open
+data Closed = Closed
+
+query :: Int -> Program Open Open Int
+query parameter = Do.fromArrow (Unsafe.unsafeFromFunction \resource ->
+  pure (Unsafe.unsafePair resource (parameter + 1)))
+
+close :: Program Open Closed Unit
+close = Do.fromArrow (Unsafe.unsafeFromFunction \_ ->
+  pure (Unsafe.unsafePair Closed unit))
+
+queryBoth :: Int -> Program (Pair Open Resource) (Pair Open Resource) Int
+queryBoth parameter = Do.fromArrow (Unsafe.unsafeFromFunction \resources ->
+  pure (Unsafe.unsafePair resources (parameter + 1)))
+
+closeFirst :: Program (Pair Open Resource) (Pair Closed Resource) Unit
+closeFirst = Do.fromArrow (Unsafe.unsafeFromFunction \resources ->
+  case Unsafe.unsafeUnpair resources of
+    Tuple _ other -> pure (Unsafe.unsafePair (Unsafe.unsafePair Closed other) unit))

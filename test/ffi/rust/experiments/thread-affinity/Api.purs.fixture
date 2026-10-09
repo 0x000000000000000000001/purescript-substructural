@@ -1,0 +1,45 @@
+module LinearLab.ThreadAffinity.Api
+  ( Handle, Local, withOwner, pure, bind, discard, read, add, abort ) where
+
+import Prelude hiding (pure, bind, discard, add)
+import Prelude as P
+import Effect (Effect)
+import Effect.Exception as Exception
+
+foreign import data NativeHandle :: Type
+newtype Handle :: Type -> Type
+newtype Handle region = Handle NativeHandle
+type role Handle nominal
+newtype Local :: Type -> Type -> Type
+newtype Local region a = Local (Effect a)
+type role Local nominal representational
+
+foreign import rawWithOwner :: forall a. Int -> (NativeHandle -> Effect a) -> Effect a
+foreign import rawRead :: NativeHandle -> Effect Int
+foreign import rawAdd :: NativeHandle -> Int -> Effect Int
+
+pure :: forall region a. a -> Local region a
+pure value = Local (P.pure value)
+
+bind :: forall region a b. Local region a -> (a -> Local region b) -> Local region b
+bind (Local first) next = Local P.do
+  value <- first
+  case next value of
+    Local second -> second
+
+discard :: forall region a b. Local region a -> (a -> Local region b) -> Local region b
+discard = bind
+
+withOwner :: forall a. Int -> (forall region. Handle region -> Local region a) -> Effect a
+withOwner initial use = rawWithOwner initial \handle ->
+  case use (Handle handle) of
+    Local action -> action
+
+read :: forall region. Handle region -> Local region Int
+read (Handle handle) = Local (rawRead handle)
+
+add :: forall region. Handle region -> Int -> Local region Int
+add (Handle handle) amount = Local (rawAdd handle amount)
+
+abort :: forall region a. String -> Local region a
+abort message = Local (Exception.throw message)

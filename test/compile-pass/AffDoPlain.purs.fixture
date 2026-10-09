@@ -1,0 +1,15 @@
+module Test.CompilePass.AffDoPlain where
+
+import Prelude hiding (bind, discard, pure)
+import Prelude as P
+import Data.Function.Sub.Aff.Do (Program, bind, discard, pure, liftAff)
+import Test.Support.AffDoProtocol (Open, Closed, query, close)
+
+-- Unqualified do selects these imports; no standard Monad instance is needed.
+accepted :: Program Open Closed Int
+accepted = do
+  first <- query 10
+  offset <- liftAff (P.pure 3)
+  result <- if first > 0 then query (first + offset) else pure first
+  close
+  pure result

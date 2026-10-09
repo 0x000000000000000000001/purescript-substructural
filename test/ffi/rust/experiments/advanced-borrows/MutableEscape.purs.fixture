@@ -1,0 +1,6 @@
+module LinearLab.AdvancedBorrows.MutableEscape where
+import Effect (Effect)
+import LinearLab.AdvancedBorrows.Api as B
+
+bad :: forall scope token. Effect (B.WriteView scope token)
+bad = B.withBuffer "abcd" \buffer -> B.withWrite buffer B.pure

@@ -1,0 +1,16 @@
+module Test.CompileFail.AffDoDuplicateResource where
+
+import Prelude
+import Data.Tuple (Tuple(..))
+import Test.Support.AffDoProtocol (Resource)
+import Data.Function.Sub.Aff.Do (Program)
+import Data.Function.Sub.Aff.Do as Do
+
+-- Even given an abstract program producing Resource, bind may not reveal that
+-- result to an ordinary continuation. The final Unit is Shared, so this tests
+-- bind's guard independently of pure's separate result constraint.
+bad :: Program Unit Unit Resource -> Program Unit Unit Unit
+bad step = Do.do
+  resource <- step
+  case Tuple resource resource of
+    Tuple _ _ -> Do.pure unit

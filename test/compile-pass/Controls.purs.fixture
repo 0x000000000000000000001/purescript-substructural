@@ -1,0 +1,38 @@
+module Test.CompilePass.Controls where
+
+import Prelude
+import Data.Array.Unique (UniqueArray)
+import Data.Function.Sub (Sub, Borrow, type (-*), unsafeClone, unsafeDrop)
+import Data.Newtype (class Newtype, unwrap)
+import Data.Tuple (Tuple(..))
+import Safe.Coerce (coerce)
+import Unsafe.Coerce (unsafeCoerce)
+
+newtype Wrapper a = Wrapper a
+derive instance newtypeWrapper :: Newtype (Wrapper a) _
+
+-- Positive controls: safe coercion and Newtype.unwrap work for real newtypes.
+coerceWrapper :: Wrapper Int -> Int
+coerceWrapper = coerce
+
+unwrapWrapper :: Wrapper Int -> Int
+unwrapWrapper = unwrap
+
+-- No unsafe primitive needed: ordinary PS values are unrestricted. This alone
+-- cannot execute a Sub over a UniqueArray because runShared lacks its instance.
+aliasUnique :: forall a. UniqueArray a -> Tuple (UniqueArray a) (UniqueArray a)
+aliasUnique value = Tuple value value
+
+-- UNSAFE CONTROLS ONLY. These definitions are typechecked, never executed.
+-- The abstraction explicitly relies on excluding unsafeCoerce and untrusted FFI.
+unsafeRun :: forall a b. Sub a b -> a -> b
+unsafeRun = unsafeCoerce
+
+unsafeUnwrapBorrow :: forall a. Borrow a -> a
+unsafeUnwrapBorrow = unsafeCoerce
+
+unsafeDuplicate :: forall a. a -* Tuple a a
+unsafeDuplicate = unsafeClone
+
+unsafeDiscard :: forall a. a -* Unit
+unsafeDiscard = unsafeDrop

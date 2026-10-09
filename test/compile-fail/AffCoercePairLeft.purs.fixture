@@ -1,0 +1,9 @@
+module Test.CompileFail.AffCoercePairLeft where
+
+import Data.Function.Sub.Aff (Pair)
+import Safe.Coerce (coerce)
+
+newtype Wrapped = Wrapped Int
+
+bad :: Pair Int Int -> Pair Wrapped Int
+bad = coerce

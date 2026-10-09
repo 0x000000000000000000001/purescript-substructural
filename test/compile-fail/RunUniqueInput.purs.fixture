@@ -1,0 +1,7 @@
+module Test.CompileFail.RunUniqueInput where
+
+import Data.Function.Sub (runShared)
+import Data.Array.Unique (UniqueArray, toShared)
+
+bad :: UniqueArray Int -> Array Int
+bad = runShared toShared

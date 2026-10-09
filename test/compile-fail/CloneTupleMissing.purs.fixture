@@ -1,0 +1,8 @@
+module Test.CompileFail.CloneTupleMissing where
+
+import Data.Function.Sub (type (-*), clone)
+import Data.Tuple (Tuple)
+
+foreign import data Resource :: Type
+bad :: Tuple Int Resource -* Tuple (Tuple Int Resource) (Tuple Int Resource)
+bad = clone

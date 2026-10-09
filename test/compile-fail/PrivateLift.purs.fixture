@@ -1,0 +1,3 @@
+module Test.CompileFail.PrivateLift where
+
+import Data.Function.Sub (liftSharedFFI)

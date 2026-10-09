@@ -1,0 +1,7 @@
+module LinearLab.ThreadAffinity.DeferredClosure where
+
+import Prelude (Unit)
+import Effect (Effect)
+import LinearLab.ThreadAffinity.Api as L
+bad :: forall region. Effect (Unit -> L.Local region Int)
+bad = L.withOwner 1 \handle -> L.pure (\_ -> L.read handle)

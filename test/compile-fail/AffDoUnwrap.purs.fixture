@@ -1,0 +1,8 @@
+module Test.CompileFail.AffDoUnwrap where
+
+import Data.Function.Sub.Aff (Pair, SubAff)
+import Data.Function.Sub.Aff.Do (Program)
+import Data.Newtype (unwrap)
+
+bad :: forall before after a. Program before after a -> SubAff before (Pair after a)
+bad = unwrap

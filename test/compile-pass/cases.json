@@ -1,0 +1,47 @@
+[
+  {
+    "module": "Test.CompilePass.SharedBoundary",
+    "expect": "accept",
+    "reason": "Both shared boundaries permit composing through an internal UniqueArray."
+  },
+  {
+    "module": "Test.CompilePass.ConditionalInstances",
+    "expect": "accept",
+    "reason": "Tuple and unique-array operations work when their element capabilities are provided."
+  },
+  {
+    "module": "Test.CompilePass.BorrowBoundary",
+    "expect": "accept",
+    "reason": "A Shared borrow result permits returning the owner; shared owners permit shared borrowed outputs."
+  },
+  {
+    "module": "Test.CompilePass.Controls",
+    "expect": "accept",
+    "reason": "Real newtype unwrap/coercion succeeds; ordinary aliasing and explicit unsafe escapes typecheck but are not executed."
+  },
+  {
+    "module": "Test.CompilePass.AffBoundary",
+    "expect": "accept",
+    "reason": "Trusted Effect resource primitives compose behind shared Aff boundaries; opaque products and a real newtype coercion control compile."
+  },
+  {
+    "module": "Test.CompilePass.AffDoQualified",
+    "expect": "accept",
+    "reason": "Qualified do supports dependent Int queries, lifted Aff Int and ordinary branching while preserving one opaque resource."
+  },
+  {
+    "module": "Test.CompilePass.AffDoTransition",
+    "expect": "accept",
+    "reason": "The resource changes from Open to Closed; the shared Int result remains usable after close."
+  },
+  {
+    "module": "Test.CompilePass.AffDoTwoResources",
+    "expect": "accept",
+    "reason": "Opaque Pair carries two non-shared resources in state while only shared Int reaches a callback."
+  },
+  {
+    "module": "Test.CompilePass.AffDoPlain",
+    "expect": "accept",
+    "reason": "Unqualified do uses imported bind/discard/pure, preserving dependent shared results, branching, lifted Aff and the resource state transition."
+  }
+]

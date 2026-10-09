@@ -1,0 +1,7 @@
+module Test.CompileFail.CoerceBorrow where
+
+import Data.Function.Sub (Borrow)
+import Safe.Coerce (coerce)
+
+bad :: Borrow Int -> Int
+bad = coerce

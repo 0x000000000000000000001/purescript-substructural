@@ -1,0 +1,13 @@
+module LinearLab.NativeShapes.EscapedEffect (deferred) where
+import Prelude
+import Data.Either (Either)
+import Data.Maybe (Maybe)
+import Effect (Effect)
+import LinearLab.NativeShapes.Cursor as C
+
+-- Ordinary Effect can legitimately keep the cursor alive after this function
+-- returns. Each invocation advances the same iterator; it does not reopen one.
+deferred :: String -> Effect (Effect (Either String (Maybe Int)))
+deferred input = do
+  cursor <- C.wide input
+  pure (C.next cursor)

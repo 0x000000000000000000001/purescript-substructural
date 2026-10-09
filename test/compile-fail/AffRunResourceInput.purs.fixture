@@ -1,0 +1,9 @@
+module Test.CompileFail.AffRunResourceInput where
+
+import Prelude
+import Data.Function.Sub.Aff (runShared)
+import Effect.Aff (Aff)
+import Test.CompilePass.AffBoundary (Resource, consume)
+
+bad :: Resource -> Aff Unit
+bad = runShared consume

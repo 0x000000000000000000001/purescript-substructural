@@ -1,0 +1,8 @@
+module Test.CompileFail.AffUnwrap where
+
+import Data.Function.Sub.Aff (SubAff)
+import Data.Newtype (unwrap)
+import Effect.Aff (Aff)
+
+bad :: SubAff Int Int -> (Int -> Aff Int)
+bad = unwrap

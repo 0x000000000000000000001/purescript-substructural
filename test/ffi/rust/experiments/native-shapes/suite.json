@@ -1,0 +1,56 @@
+{
+  "name": "native-shapes",
+  "description": "Actual Rust generic parsers and impl Iterator behind Box<dyn CursorOps>, returning Either String (Maybe Int) to PureScript.",
+  "cases": [
+    {
+      "module": "LinearLab.NativeShapes.Main",
+      "expect": "accept",
+      "reason": "Ordinary Effect client uses native generic/trait-object iteration and explicit destruction."
+    },
+    {
+      "module": "LinearLab.NativeShapes.ReplayAccepted",
+      "expect": "accept",
+      "reason": "Aliases and replay remain ordinary PureScript; the wrapper controls consumption dynamically."
+    },
+    {
+      "module": "LinearLab.NativeShapes.EscapedEffect",
+      "expect": "accept",
+      "reason": "A deferred Effect can keep the native cursor alive; no static region confinement is claimed."
+    },
+    {
+      "module": "LinearLab.NativeShapes.CoerceCursor",
+      "expect": "reject",
+      "codes": [
+        "NoInstanceFound",
+        "TypesDoNotUnify"
+      ],
+      "reason": "Opaque Cursor cannot be safely coerced to its native contents."
+    },
+    {
+      "module": "LinearLab.NativeShapes.PrivateRunner",
+      "expect": "reject",
+      "codes": [
+        "UnknownImport"
+      ],
+      "reason": "Raw branch translation is hidden behind the typed public next operation."
+    },
+    {
+      "module": "LinearLab.NativeShapes.ForgeCursor",
+      "expect": "reject",
+      "codes": [
+        "UnknownName"
+      ],
+      "reason": "No public Cursor constructor permits forging a handle."
+    }
+  ],
+  "executions": [
+    {
+      "module": "LinearLab.NativeShapes.Main",
+      "marker": "NATIVE_SHAPES_OK",
+      "modes": [
+        "normal",
+        "threaded"
+      ]
+    }
+  ]
+}

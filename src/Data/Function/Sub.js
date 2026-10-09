@@ -1,8 +1,6 @@
-'use strict';
-
 /* -------------------------------------------------------------------------- */
 
-exports.composeFFI = function(f) {
+export const composeFFI = function(f) {
   return function(g) {
     return function(x) {
       return f(g(x));
@@ -10,17 +8,17 @@ exports.composeFFI = function(f) {
   };
 };
 
-exports.idFFI = function(a) {
+export const idFFI = function(a) {
   return a;
 };
 
-exports.runSharedFFI = function(func) {
+export const runSharedFFI = function(func) {
   return function(value) {
     return func(value);
   };
 };
 
-exports.liftSharedFFI = function(func) {
+export const liftSharedFFI = function(func) {
   return function(value) {
     return func(value);
   };
@@ -28,17 +26,17 @@ exports.liftSharedFFI = function(func) {
 
 /* -------------------------------------------------------------------------- */
 
-exports.unsafeCloneFFI = function(Tuple) {
+export const unsafeCloneFFI = function(Tuple) {
   return function(a) {
     return Tuple(a)(a);
   };
 };
 
-exports.unsafeDrop = function(a) {
+export const unsafeDrop = function(a) {
   return null;
 };
 
-exports['fst\'FFI'] = function(drop) {
+export const fstFFI = function(drop) {
   return function(fst) {
     return function(snd) {
       return function(tuple) {
@@ -49,7 +47,7 @@ exports['fst\'FFI'] = function(drop) {
   };
 };
 
-exports['snd\'FFI'] = function(drop) {
+export const sndFFI = function(drop) {
   return function(fst) {
     return function(snd) {
       return function(tuple) {
@@ -62,7 +60,7 @@ exports['snd\'FFI'] = function(drop) {
 
 /* -------------------------------------------------------------------------- */
 
-exports.cloneTupleFFI = function(Tuple) {
+export const cloneTupleFFI = function(Tuple) {
   return function(fst) {
     return function(snd) {
       return function(cloneA) {
@@ -82,7 +80,7 @@ exports.cloneTupleFFI = function(Tuple) {
   };
 };
 
-exports.dropTupleFFI = function(fst) {
+export const dropTupleFFI = function(fst) {
   return function(snd) {
     return function(dropA) {
       return function(dropB) {
@@ -97,7 +95,7 @@ exports.dropTupleFFI = function(fst) {
 
 /* -------------------------------------------------------------------------- */
 
-exports.borrowFFI = function(Tuple) {
+export const borrowFFI = function(Tuple) {
   return function(func) {
     return function(value) {
       var result = func(value);

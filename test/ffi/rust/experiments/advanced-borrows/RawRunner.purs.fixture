@@ -1,0 +1,4 @@
+module LinearLab.AdvancedBorrows.RawRunner where
+import LinearLab.AdvancedBorrows.Api (Ix(..))
+
+bad (Ix action) = action

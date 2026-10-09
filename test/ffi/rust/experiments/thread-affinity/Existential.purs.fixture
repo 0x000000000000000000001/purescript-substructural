@@ -1,0 +1,19 @@
+module LinearLab.ThreadAffinity.Existential (Packed, pack, unpack, escaped) where
+
+import Effect (Effect)
+import LinearLab.ThreadAffinity.Api as L
+
+newtype Packed = Packed
+  (forall result. (forall region. L.Handle region -> result) -> result)
+
+pack :: forall region. L.Handle region -> Packed
+pack handle = Packed (\use -> use handle)
+
+unpack :: forall result. Packed -> (forall region. L.Handle region -> result) -> result
+unpack (Packed use) consumer = use consumer
+
+-- Rank-2 does not prevent existential retention of a transport handle.
+-- The owner still closes at scope exit, and the public API cannot execute
+-- that retained handle in another region.
+escaped :: Effect Packed
+escaped = L.withOwner 12 \handle -> L.pure (pack handle)

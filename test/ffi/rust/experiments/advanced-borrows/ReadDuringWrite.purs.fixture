@@ -1,0 +1,8 @@
+module LinearLab.AdvancedBorrows.ReadDuringWrite where
+import Prelude
+import Effect (Effect)
+import LinearLab.AdvancedBorrows.Api as B
+
+bad :: Effect Int
+bad = B.withBuffer "abcd" \buffer -> B.withWrite buffer \_ ->
+  B.withRead buffer B.checksum

@@ -1,0 +1,7 @@
+module LinearLab.AdvancedBorrows.CoerceAction where
+import LinearLab.AdvancedBorrows.Api as B
+import Safe.Coerce (coerce)
+
+bad :: forall scope token a.
+  B.Ix scope (B.Writing token) (B.Writing token) a -> B.Ix scope B.Ready B.Ready a
+bad = coerce

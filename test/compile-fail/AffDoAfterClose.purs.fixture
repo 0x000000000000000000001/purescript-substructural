@@ -1,0 +1,10 @@
+module Test.CompileFail.AffDoAfterClose where
+
+import Test.Support.AffDoProtocol (Open, Closed, query, close)
+import Data.Function.Sub.Aff.Do (Program)
+import Data.Function.Sub.Aff.Do as Do
+
+bad :: Program Open Closed Int
+bad = Do.do
+  close
+  query 10

@@ -1,0 +1,21 @@
+module Test.CompilePass.AffDoQualified where
+
+import Prelude
+import Data.Function.Sub.Aff (Pair, SubAff)
+import Test.Support.AffDoProtocol (Open, query)
+import Data.Function.Sub.Aff.Do (ResourceProgram)
+import Data.Function.Sub.Aff.Do as Do
+
+accepted :: ResourceProgram Open Int
+accepted = Do.do
+  first <- query 10
+  second <- query (first + 1)
+  offset <- Do.liftAff (pure 3)
+  if second > first then query (second + offset) else Do.pure first
+
+-- Public conversion keeps both the resource and its shared result inside Pair.
+preserved :: ResourceProgram Open Int -> SubAff Open (Pair Open Int)
+preserved = Do.toArrow
+
+roundTrip :: ResourceProgram Open Int -> ResourceProgram Open Int
+roundTrip = Do.fromArrow <<< Do.toArrow

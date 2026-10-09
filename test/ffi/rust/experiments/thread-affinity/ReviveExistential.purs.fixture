@@ -1,0 +1,10 @@
+module LinearLab.ThreadAffinity.ReviveExistential where
+
+import Prelude
+import Effect (Effect)
+import LinearLab.ThreadAffinity.Api as L
+import LinearLab.ThreadAffinity.Existential (escaped, unpack)
+bad :: Effect Int
+bad = do
+  packed <- escaped
+  L.withOwner 2 \_ -> unpack packed L.read

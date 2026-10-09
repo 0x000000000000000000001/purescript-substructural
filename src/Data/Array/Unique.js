@@ -1,8 +1,6 @@
-'use strict';
-
 /* -------------------------------------------------------------------------- */
 
-exports.cloneUniqueArrayFFI = function(clone) {
+export const cloneUniqueArrayFFI = function(clone) {
   return function(Tuple) {
     return function(fst) {
       return function(snd) {
@@ -22,7 +20,7 @@ exports.cloneUniqueArrayFFI = function(clone) {
   };
 };
 
-exports.dropUniqueArrayFFI = function(drop) {
+export const dropUniqueArrayFFI = function(drop) {
   return function(array) {
     var length = array.length;
     for (var i = 0; i < length; ++i) {
@@ -33,25 +31,25 @@ exports.dropUniqueArrayFFI = function(drop) {
 
 /* -------------------------------------------------------------------------- */
 
-exports.empty = function(unit) {
+export const empty = function(unit) {
   return [];
 };
 
-exports.singleton = function(element) {
+export const singleton = function(element) {
   return [element];
 };
 
-exports.fromSharedFFI = function(array) {
+export const fromSharedFFI = function(array) {
   return array.slice();
 };
 
-exports.toSharedFFI = function(array) {
+export const toSharedFFI = function(array) {
   return array;
 };
 
 /* -------------------------------------------------------------------------- */
 
-exports.snocFFI = function(fst) {
+export const snocFFI = function(fst) {
   return function(snd) {
     return function(tuple) {
       var array = fst(tuple);
@@ -64,12 +62,12 @@ exports.snocFFI = function(fst) {
 
 /* -------------------------------------------------------------------------- */
 
-exports.length = function(array) {
+export const length = function(array) {
   return array.length;
 };
 
 /* -------------------------------------------------------------------------- */
 
-exports.reverse = function(array) {
+export const reverse = function(array) {
   return array.reverse();
 };

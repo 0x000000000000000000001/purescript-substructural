@@ -1,0 +1,3 @@
+module Test.CompileFail.AffDoConstructor where
+
+import Data.Function.Sub.Aff.Do (Program(Program))

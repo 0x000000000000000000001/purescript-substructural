@@ -1,0 +1,47 @@
+module LinearLab.AsyncResources.Native
+  ( Control, Resource, newControl, withResource, operation
+  , awaitStarted, awaitCallback, complete, markContinued, verify
+  ) where
+
+import Prelude
+import Data.Either (Either(..))
+import Effect (Effect)
+import Effect.Aff (Aff, Canceler(..), bracket, makeAff, nonCanceler)
+import Effect.Class (liftEffect)
+import Effect.Exception (Error)
+
+foreign import data Control :: Type
+foreign import data Resource :: Type
+foreign import newControl :: Int -> Effect Control
+foreign import acquireImpl :: Control -> Effect Resource
+foreign import controlOf :: Resource -> Control
+foreign import releaseImpl :: Resource -> Effect Unit
+foreign import startImpl :: Resource -> (Int -> Effect Unit) -> (Error -> Effect Unit) -> Effect Unit
+foreign import cancelImpl :: Resource -> Effect Unit
+foreign import waitImpl :: Control -> Int -> (Int -> Effect Unit) -> Effect Unit
+foreign import complete :: Control -> Boolean -> Effect Boolean
+foreign import markContinued :: Control -> Effect Unit
+foreign import verify :: Control -> Int -> Effect Unit
+
+wait :: Control -> Int -> Aff Unit
+wait control event = makeAff \done -> do
+  waitImpl control event (\_ -> done (Right unit))
+  pure nonCanceler
+
+awaitStarted :: Control -> Aff Unit
+awaitStarted control = wait control 0
+
+awaitCallback :: Control -> Aff Unit
+awaitCallback control = wait control 2
+
+withResource :: forall a. Control -> (Resource -> Aff a) -> Aff a
+withResource control = bracket
+  (liftEffect (acquireImpl control))
+  (\resource -> wait (controlOf resource) 1 *> liftEffect (releaseImpl resource))
+
+operation :: Resource -> Aff Int
+operation resource = makeAff \done -> do
+  startImpl resource (done <<< Right) (done <<< Left)
+  pure (Canceler \_ -> do
+    liftEffect (cancelImpl resource)
+    wait (controlOf resource) 1)

@@ -1,0 +1,7 @@
+module Test.CompileFail.UnwrapBorrow where
+
+import Data.Function.Sub (Borrow)
+import Data.Newtype (unwrap)
+
+bad :: Borrow Int -> Int
+bad = unwrap

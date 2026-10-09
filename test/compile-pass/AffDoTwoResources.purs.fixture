@@ -1,0 +1,12 @@
+module Test.CompilePass.AffDoTwoResources where
+
+import Data.Function.Sub.Aff (Pair)
+import Test.Support.AffDoProtocol (Open, Closed, Resource, queryBoth, closeFirst)
+import Data.Function.Sub.Aff.Do (Program)
+import Data.Function.Sub.Aff.Do as Do
+
+accepted :: Program (Pair Open Resource) (Pair Closed Resource) Int
+accepted = Do.do
+  result <- queryBoth 10
+  closeFirst
+  Do.pure result

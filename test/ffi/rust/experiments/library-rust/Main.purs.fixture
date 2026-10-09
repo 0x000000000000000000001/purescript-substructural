@@ -1,0 +1,29 @@
+module LibraryRust.Main where
+
+import Prelude
+import Data.Function.Sub (borrow, clone, drop, fst', liftShared, runShared, snd')
+import Data.Array.Unique as Unique
+import Data.Tuple (Tuple(..))
+import Effect (Effect)
+import LibraryRust.Owned as Owned
+import LibraryRust.DropFailure as DropFailure
+import Test.Data.Assert (assertEqual)
+import Test.Data.Array.Unique as Arrays
+import Test.Data.Function.Sub as Functions
+
+foreign import check :: Int -> Effect Unit
+
+main :: Effect Unit
+main = do
+  Arrays.spec
+  Functions.spec
+  assertEqual "generic String boundary" "hello!" (runShared (liftShared (_ <> "!")) "hello")
+  assertEqual "generic Boolean boundary" false (runShared (liftShared not) true)
+  assertEqual "generic shared tuple boundary" (Tuple 3 "three") (runShared identity (Tuple 3 "three"))
+  assertEqual "unique String array" ["b", "a"] (runShared (Unique.fromShared >>> Unique.reverse >>> Unique.toShared) ["a", "b"])
+  assertEqual "drop owner in container" unit (runShared (Owned.make >>> Unique.singleton >>> drop) 3)
+  assertEqual "drop owner in nested containers" unit (runShared (Owned.make >>> Unique.singleton >>> Unique.singleton >>> drop) 4)
+  assertEqual "read then drop owner" 5 (runShared (Owned.make >>> borrow Owned.readSize >>> snd') 5)
+  Owned.verify
+  DropFailure.verify
+  check (runShared (clone >>> fst' >>> liftShared (_ + 2)) 40)

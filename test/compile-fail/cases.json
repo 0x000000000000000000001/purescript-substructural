@@ -1,0 +1,378 @@
+[
+  {
+    "module": "Test.CompileFail.RunUniqueInput",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "runShared requires a Shared input; UniqueArray has no Shared instance."
+  },
+  {
+    "module": "Test.CompileFail.RunUniqueOutput",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "runShared also requires a Shared output."
+  },
+  {
+    "module": "Test.CompileFail.LiftUniqueInput",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "liftShared cannot hide unrestricted dropping of a non-Shared input."
+  },
+  {
+    "module": "Test.CompileFail.LiftUniqueOutput",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "liftShared cannot produce a non-Shared output from a reusable ordinary closure."
+  },
+  {
+    "module": "Test.CompileFail.BorrowUniqueEscape",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "borrow requires Shared result; Borrow UniqueArray is not Shared."
+  },
+  {
+    "module": "Test.CompileFail.CloneTupleMissing",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "Tuple cloning requires Clone for both elements."
+  },
+  {
+    "module": "Test.CompileFail.DropTupleMissing",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "Tuple dropping requires Drop for both elements."
+  },
+  {
+    "module": "Test.CompileFail.CloneUniqueMissing",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "UniqueArray cloning requires Clone for its elements."
+  },
+  {
+    "module": "Test.CompileFail.DropUniqueMissing",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "UniqueArray dropping requires Drop for its elements."
+  },
+  {
+    "module": "Test.CompileFail.CoerceSub",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "Abstract foreign Sub cannot be safely coerced to an ordinary function."
+  },
+  {
+    "module": "Test.CompileFail.CoerceBorrow",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "Abstract foreign Borrow cannot be safely coerced to its referent."
+  },
+  {
+    "module": "Test.CompileFail.UnwrapSub",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "Sub is abstract foreign data, not a public Newtype instance."
+  },
+  {
+    "module": "Test.CompileFail.UnwrapBorrow",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "Borrow has no public Newtype instance."
+  },
+  {
+    "module": "Test.CompileFail.PrivateLift",
+    "expect": "reject",
+    "codes": [
+      "UnknownImport"
+    ],
+    "reason": "The unchecked ordinary-function builder is private."
+  },
+  {
+    "module": "Test.CompileFail.PrivateRun",
+    "expect": "reject",
+    "codes": [
+      "UnknownImport"
+    ],
+    "reason": "The runner without Shared constraints is private."
+  },
+  {
+    "module": "Test.CompileFail.PrivateBorrow",
+    "expect": "reject",
+    "codes": [
+      "UnknownImport"
+    ],
+    "reason": "The raw borrow builder without the Shared-result requirement is private."
+  },
+  {
+    "module": "Test.CompileFail.AffDoubleConsume",
+    "expect": "reject",
+    "codes": [
+      "TypesDoNotUnify"
+    ],
+    "reason": "A consuming arrow outputs Unit and cannot feed a second Resource consumer."
+  },
+  {
+    "module": "Test.CompileFail.AffDuplicateResource",
+    "expect": "reject",
+    "codes": [
+      "TypesDoNotUnify"
+    ],
+    "reason": "Two consumers combined with tensor require Pair Resource Resource, not one Resource."
+  },
+  {
+    "module": "Test.CompileFail.AffOmitResource",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "liftShared cannot discard a resource that lacks Shared."
+  },
+  {
+    "module": "Test.CompileFail.AffLiftResourceOutput",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "liftShared cannot capture and return an owned resource through an ordinary closure."
+  },
+  {
+    "module": "Test.CompileFail.AffRunResourceInput",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "runShared requires a Shared input even for a trusted consuming primitive."
+  },
+  {
+    "module": "Test.CompileFail.AffRunResourceOutput",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "runShared requires a Shared output; a resource cannot escape acquisition."
+  },
+  {
+    "module": "Test.CompileFail.AffCoerceInput",
+    "expect": "reject",
+    "codes": [
+      "TypesDoNotUnify"
+    ],
+    "reason": "The input role is nominal despite representational equality of Int and its newtype."
+  },
+  {
+    "module": "Test.CompileFail.AffCoerceOutput",
+    "expect": "reject",
+    "codes": [
+      "TypesDoNotUnify"
+    ],
+    "reason": "The output role is nominal despite representational equality of Int and its newtype."
+  },
+  {
+    "module": "Test.CompileFail.AffCoercePairLeft",
+    "expect": "reject",
+    "codes": [
+      "TypesDoNotUnify"
+    ],
+    "reason": "The opaque product left role is nominal."
+  },
+  {
+    "module": "Test.CompileFail.AffCoercePairRight",
+    "expect": "reject",
+    "codes": [
+      "TypesDoNotUnify"
+    ],
+    "reason": "The opaque product right role is nominal."
+  },
+  {
+    "module": "Test.CompileFail.AffConstructor",
+    "expect": "reject",
+    "codes": [
+      "UnknownImportDataConstructor"
+    ],
+    "reason": "Even the trusted module keeps the SubAff constructor private."
+  },
+  {
+    "module": "Test.CompileFail.AffPairConstructor",
+    "expect": "reject",
+    "codes": [
+      "UnknownImportDataConstructor"
+    ],
+    "reason": "Even the trusted module keeps the Pair constructor private."
+  },
+  {
+    "module": "Test.CompileFail.AffRawRunner",
+    "expect": "reject",
+    "codes": [
+      "UnknownImport"
+    ],
+    "reason": "The ordinary API does not expose its unrestricted runner."
+  },
+  {
+    "module": "Test.CompileFail.AffRawPrimitive",
+    "expect": "reject",
+    "codes": [
+      "UnknownImport"
+    ],
+    "reason": "The ordinary API does not expose unchecked primitive construction."
+  },
+  {
+    "module": "Test.CompileFail.AffUnwrap",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "The abstract arrow has no public Newtype instance that reveals its function."
+  },
+  {
+    "module": "Test.CompileFail.AffFromResourceInput",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "Embedding a pure Sub also requires a Shared input."
+  },
+  {
+    "module": "Test.CompileFail.AffFromResourceOutput",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "Embedding a pure Sub also requires a Shared output."
+  },
+  {
+    "module": "Test.CompileFail.AffDoFromResource",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "Guarded fromArrow rejects a Resource result: Resource has no Shared instance."
+  },
+  {
+    "module": "Test.CompileFail.AffDoDuplicateResource",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "The guarded continuation and pure boundary prevent duplicating a resource even given an abstract Program that produces one."
+  },
+  {
+    "module": "Test.CompileFail.AffDoConstructor",
+    "expect": "reject",
+    "codes": [
+      "UnknownImportDataConstructor"
+    ],
+    "reason": "The Program constructor is private."
+  },
+  {
+    "module": "Test.CompileFail.AffDoRawRunner",
+    "expect": "reject",
+    "codes": [
+      "UnknownImport"
+    ],
+    "reason": "The safe Program API exposes no unrestricted runner."
+  },
+  {
+    "module": "Test.CompileFail.AffDoAfterClose",
+    "expect": "reject",
+    "codes": [
+      "TypesDoNotUnify"
+    ],
+    "reason": "A query needs Open and cannot follow a step whose remaining resource is Closed."
+  },
+  {
+    "module": "Test.CompileFail.AffDoDoubleClose",
+    "expect": "reject",
+    "codes": [
+      "TypesDoNotUnify"
+    ],
+    "reason": "A second close requires Open after the first has already transitioned to Closed."
+  },
+  {
+    "module": "Test.CompileFail.AffDoSkipClose",
+    "expect": "reject",
+    "codes": [
+      "TypesDoNotUnify"
+    ],
+    "reason": "An open-ended query cannot satisfy a runner's required Open-to-Closed protocol."
+  },
+  {
+    "module": "Test.CompileFail.AffDoLiftResource",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "liftAff requires a Shared result and cannot expose an owned resource through ordinary Aff."
+  },
+  {
+    "module": "Test.CompileFail.AffDoPureResource",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "pure cannot capture an owned resource as an unrestricted result because it requires Shared."
+  },
+  {
+    "module": "Test.CompileFail.AffDoDiscardResource",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "A do statement without a binding still cannot discard a resource result through an unrestricted callback."
+  },
+  {
+    "module": "Test.CompileFail.AffDoUnwrap",
+    "expect": "reject",
+    "codes": [
+      "NoInstanceFound"
+    ],
+    "reason": "Program exposes no Newtype instance; conversion to its arrow remains explicit through toArrow."
+  },
+  {
+    "module": "Test.CompileFail.AffDoCoerceBefore",
+    "expect": "reject",
+    "codes": [
+      "TypesDoNotUnify"
+    ],
+    "reason": "The input resource role is nominal despite the visible newtype representation equality."
+  },
+  {
+    "module": "Test.CompileFail.AffDoCoerceAfter",
+    "expect": "reject",
+    "codes": [
+      "TypesDoNotUnify"
+    ],
+    "reason": "The remaining resource role is nominal despite the visible newtype representation equality."
+  },
+  {
+    "module": "Test.CompileFail.AffDoCoerceResult",
+    "expect": "reject",
+    "codes": [
+      "TypesDoNotUnify"
+    ],
+    "reason": "The result role is nominal so coercion cannot bypass result capabilities."
+  }
+]

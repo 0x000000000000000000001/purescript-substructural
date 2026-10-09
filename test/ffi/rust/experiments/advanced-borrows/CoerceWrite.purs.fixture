@@ -1,0 +1,6 @@
+module LinearLab.AdvancedBorrows.CoerceWrite where
+import LinearLab.AdvancedBorrows.Api as B
+import Safe.Coerce (coerce)
+
+bad :: forall scope old current. B.WriteView scope old -> B.WriteView scope current
+bad = coerce

@@ -1,0 +1,7 @@
+module Test.CompileFail.CoerceSub where
+
+import Data.Function.Sub (Sub)
+import Safe.Coerce (coerce)
+
+bad :: Sub Int Int -> (Int -> Int)
+bad = coerce

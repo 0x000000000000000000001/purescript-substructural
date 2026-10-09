@@ -1,0 +1,6 @@
+module LinearLab.ThreadAffinity.OrdinaryEffect where
+
+import Effect (Effect)
+import LinearLab.ThreadAffinity.Api as L
+bad :: forall region. L.Handle region -> Effect Int
+bad = L.read

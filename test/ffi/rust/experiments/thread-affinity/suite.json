@@ -1,0 +1,110 @@
+{
+  "name": "thread-affinity",
+  "description": "A genuinely non-Send and non-Sync Rust owner remains in a thread-local arena behind a checked scoped handle.",
+  "hook": "hook.mjs",
+  "cases": [
+    {
+      "module": "LinearLab.ThreadAffinity.Main",
+      "expect": "accept",
+      "reason": "Scoped PureScript access and replay of the effect acquire independent thread-local owners."
+    },
+    {
+      "module": "LinearLab.ThreadAffinity.Existential",
+      "expect": "accept",
+      "reason": "Existential retention of a handle is permitted; it is not a retained owner. Main checks its expired native backstop."
+    },
+    {
+      "module": "LinearLab.ThreadAffinity.DirectEscape",
+      "expect": "reject",
+      "codes": [
+        "TypesDoNotUnify",
+        "EscapedSkolem"
+      ],
+      "reason": "A concrete fresh region cannot escape directly."
+    },
+    {
+      "module": "LinearLab.ThreadAffinity.DeferredAction",
+      "expect": "reject",
+      "codes": [
+        "TypesDoNotUnify",
+        "EscapedSkolem"
+      ],
+      "reason": "A deferred action retains its fresh region."
+    },
+    {
+      "module": "LinearLab.ThreadAffinity.DeferredClosure",
+      "expect": "reject",
+      "codes": [
+        "TypesDoNotUnify",
+        "EscapedSkolem"
+      ],
+      "reason": "Capturing the handle in a closure does not erase the Local region."
+    },
+    {
+      "module": "LinearLab.ThreadAffinity.ReviveExistential",
+      "expect": "reject",
+      "codes": [
+        "TypesDoNotUnify",
+        "EscapedSkolem"
+      ],
+      "reason": "An existential old region cannot be instantiated as the new live region."
+    },
+    {
+      "module": "LinearLab.ThreadAffinity.OrdinaryEffect",
+      "expect": "reject",
+      "codes": [
+        "TypesDoNotUnify"
+      ],
+      "reason": "A Local operation is not an ordinary schedulable Effect."
+    },
+    {
+      "module": "LinearLab.ThreadAffinity.CoerceHandle",
+      "expect": "reject",
+      "codes": [
+        "TypesDoNotUnify",
+        "NoInstanceFound"
+      ],
+      "reason": "Handle region role is nominal."
+    },
+    {
+      "module": "LinearLab.ThreadAffinity.CoerceLocal",
+      "expect": "reject",
+      "codes": [
+        "TypesDoNotUnify",
+        "NoInstanceFound"
+      ],
+      "reason": "Local region role is nominal."
+    },
+    {
+      "module": "LinearLab.ThreadAffinity.Unwrap",
+      "expect": "reject",
+      "codes": [
+        "UnknownImportDataConstructor"
+      ],
+      "reason": "Clients cannot unwrap a Local action to bypass the scoped runner."
+    },
+    {
+      "module": "LinearLab.ThreadAffinity.RawAccess",
+      "expect": "reject",
+      "codes": [
+        "UnknownImport"
+      ],
+      "reason": "Native unchecked access bridge is private to the adapter."
+    },
+    {
+      "module": "LinearLab.ThreadAffinity.UnsafeControl",
+      "expect": "accept",
+      "reason": "Explicit unsafeCoerce is outside the static guarantee. Compile-only; never executed."
+    }
+  ],
+  "executions": [
+    {
+      "module": "LinearLab.ThreadAffinity.Main",
+      "modes": [
+        "normal",
+        "threaded"
+      ],
+      "marker": "THREAD_AFFINITY_OK results=34,34 ps-exception=cleaned ps-existential=expired owners=12 destroyed=12"
+    }
+  ]
+}

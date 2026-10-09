@@ -1,0 +1,21 @@
+module LinearLab.AdvancedBorrows.Unwind where
+import Prelude
+import Data.Either (Either(..))
+import Effect (Effect)
+import Effect.Exception (message)
+import LinearLab.AdvancedBorrows.Api as B
+
+program :: Effect Int
+program = B.withBuffer "abcd" \buffer -> B.do
+  outer <- B.attempt (B.withWrite buffer \parent ->
+    B.reborrow parent 0 2 \child -> B.fill child 999)
+  restored <- B.withWrite buffer \parent -> B.do
+    inner <- B.attempt (B.reborrow parent 0 1 \child -> B.fill child 999)
+    B.fill parent 67
+    sum <- B.checksumWrite parent
+    case inner of
+      Left err | message err == "byte out of range" -> B.pure sum
+      _ -> B.pure (-100)
+  case outer of
+    Left err | message err == "byte out of range" -> B.pure restored
+    _ -> B.pure (-200)

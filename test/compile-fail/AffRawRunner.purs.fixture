@@ -1,0 +1,3 @@
+module Test.CompileFail.AffRawRunner where
+
+import Data.Function.Sub.Aff (unsafeRun)

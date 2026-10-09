@@ -1,0 +1,33 @@
+module LinearLab.ThreadAffinity.Main where
+
+import Prelude
+import Effect (Effect)
+import Data.Either (Either(..))
+import Effect.Exception as Exception
+import LinearLab.ThreadAffinity.Api as L
+import LinearLab.ThreadAffinity.Existential (escaped, unpack)
+
+foreign import verify :: Int -> Int -> Boolean -> Boolean -> Effect Unit
+-- Test-only bridge deliberately bypasses Local to check a leaked handle's
+-- native backstop. It is not part of the public scoped library API.
+foreign import assertExpired :: forall region. L.Handle region -> Effect Boolean
+
+program :: Effect Int
+program = L.withOwner 10 \owner -> L.do
+  changed <- L.add owner 7
+  observed <- L.read owner
+  L.pure (changed + observed)
+
+main :: Effect Unit
+main = do
+  first <- program
+  second <- program
+  failed <- Exception.try (L.withOwner 4 \owner -> L.do
+    _ <- L.add owner 1
+    L.abort "expected-scoped-error" :: L.Local _ Unit)
+  let caught = case failed of
+        Left error -> Exception.message error == "expected-scoped-error"
+        Right _ -> false
+  packed <- escaped
+  expired <- unpack packed assertExpired
+  verify first second caught expired

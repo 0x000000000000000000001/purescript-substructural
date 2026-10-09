@@ -1,0 +1,12 @@
+module Test.CompilePass.SharedBoundary where
+
+import Prelude
+import Data.Function.Sub (liftShared, runShared)
+import Data.Array.Unique as U
+
+-- Both ends are Shared even though the composed arrow has a unique middle.
+roundTrip :: Array Int -> Array Int
+roundTrip = runShared (U.toShared <<< U.reverse <<< U.fromShared)
+
+ordinary :: Int -> Int
+ordinary = runShared (liftShared (_ + 1))

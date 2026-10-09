@@ -1,0 +1,15 @@
+module LinearLab.AdvancedBorrows.Existential (Packed, unpack, escaped) where
+import Effect (Effect)
+import LinearLab.AdvancedBorrows.Api as B
+
+newtype Packed = Packed
+  (forall result. (forall scope token. B.WriteView scope token -> result) -> result)
+pack :: forall scope token. B.WriteView scope token -> Packed
+pack view = Packed (\use -> use view)
+unpack :: forall result. Packed -> (forall scope token. B.WriteView scope token -> result) -> result
+unpack (Packed use) consumer = use consumer
+
+-- Existential storage is allowed; it gives no runner for the hidden token.
+escaped :: Effect Packed
+escaped = B.withBuffer "abcd" \buffer -> B.withWrite buffer \view ->
+  B.pure (pack view)

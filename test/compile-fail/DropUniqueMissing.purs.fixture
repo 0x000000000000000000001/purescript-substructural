@@ -1,0 +1,9 @@
+module Test.CompileFail.DropUniqueMissing where
+
+import Prelude
+import Data.Function.Sub (type (-*), drop)
+import Data.Array.Unique (UniqueArray)
+
+foreign import data Resource :: Type
+bad :: UniqueArray Resource -* Unit
+bad = drop

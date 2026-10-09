@@ -1,0 +1,11 @@
+module Test.CompileFail.AffDoDiscardResource where
+
+import Prelude
+import Data.Function.Sub.Aff.Do (Program)
+import Data.Function.Sub.Aff.Do as Do
+import Test.Support.AffDoProtocol (Resource)
+
+bad :: Program Unit Unit Resource -> Program Unit Unit Unit
+bad step = Do.do
+  step
+  Do.pure unit

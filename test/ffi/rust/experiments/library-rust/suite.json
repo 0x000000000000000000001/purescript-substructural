@@ -1,0 +1,16 @@
+{
+  "name": "library-rust",
+  "description": "Rust implementation probes using the actual public library modules copied unchanged from src.",
+  "hook": "hook.mjs",
+  "cases": [
+    { "module": "LibraryRust.Main", "expect": "accept", "reason": "Actual public Sub and UniqueArray modules execute generic shared boundaries and containers of native owners." },
+    { "module": "LibraryRust.AffDoMain", "expect": "accept", "reason": "The unchanged Aff.Do runtime test imports the actual public Aff, Aff.Unsafe and Aff.Do modules." },
+    { "module": "LibraryRust.CloneOwner", "expect": "reject", "codes": ["NoInstanceFound"], "reason": "The native Owner's public library instance grants Drop but not Clone." },
+    { "module": "LibraryRust.CloneOwners", "expect": "reject", "codes": ["NoInstanceFound"], "reason": "A container does not grant Clone when its element lacks that capability." },
+    { "module": "LibraryRust.EscapeOwner", "expect": "reject", "codes": ["NoInstanceFound"], "reason": "The actual runShared boundary prevents a non-shared native owner from escaping." }
+  ],
+  "executions": [
+    { "module": "LibraryRust.Main", "modes": ["normal", "threaded"], "marker": "LIBRARY_RUST_OK" },
+    { "module": "LibraryRust.AffDoMain", "modes": ["threaded"], "marker": "SUBSTRUCTURAL_AFF_DO_RUST_OK" }
+  ]
+}

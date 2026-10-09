@@ -1,0 +1,9 @@
+module Test.CompileFail.AffFromResourceOutput where
+
+import Prelude
+import Data.Function.Sub (Sub)
+import Data.Function.Sub.Aff (SubAff, fromShared)
+import Test.CompilePass.AffBoundary (Resource)
+
+bad :: Sub Unit Resource -> SubAff Unit Resource
+bad = fromShared

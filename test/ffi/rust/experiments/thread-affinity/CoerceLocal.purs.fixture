@@ -1,0 +1,6 @@
+module LinearLab.ThreadAffinity.CoerceLocal where
+
+import Safe.Coerce (coerce)
+import LinearLab.ThreadAffinity.Api as L
+bad :: forall a b. L.Local a Int -> L.Local b Int
+bad = coerce

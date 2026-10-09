@@ -1,0 +1,87 @@
+module LinearLab.AsyncResources.Main where
+
+import Prelude
+import Data.Either (Either(..))
+import Effect (Effect)
+import Effect.Aff (Aff, attempt, forkAff, joinFiber, killFiber, launchAff_, throwError)
+import Effect.Class (liftEffect)
+import Effect.Exception (error, message)
+import LinearLab.AsyncResources.Native as N
+
+foreign import done :: Effect Unit
+
+check :: String -> Boolean -> Aff Unit
+check label condition = unless condition (throwError (error label))
+
+work :: N.Control -> Aff Int
+work control = N.withResource control \resource -> do
+  value <- N.operation resource
+  liftEffect (N.markContinued control)
+  pure value
+
+main :: Effect Unit
+main = launchAff_ do
+  success <- liftEffect (N.newControl 7)
+  successful <- forkAff (work success)
+  N.awaitStarted success
+  accepted <- liftEffect (N.complete success false)
+  check "completion signal accepted" accepted
+  value <- joinFiber successful
+  check "native Future reads acquired Vec" (value == 24)
+  killFiber (error "too late to cancel") successful
+  N.awaitCallback success
+  liftEffect (N.verify success 0)
+
+  failure <- liftEffect (N.newControl 10)
+  failing <- forkAff (attempt (work failure))
+  N.awaitStarted failure
+  void (liftEffect (N.complete failure true))
+  failed <- joinFiber failing
+  case failed of
+    Left reason -> check "native failure propagated" (message reason == "native operation failed")
+    Right _ -> throwError (error "native failure unexpectedly succeeded")
+  N.awaitCallback failure
+  liftEffect (N.verify failure 1)
+
+  cancelled <- liftEffect (N.newControl 20)
+  waiting <- forkAff (work cancelled)
+  N.awaitStarted cancelled
+  killFiber (error "cancel pending native Future") waiting
+  N.awaitCallback cancelled
+  late <- liftEffect (N.complete cancelled false)
+  check "completion after cancellation refused" (not late)
+  liftEffect (N.verify cancelled 2)
+
+  raced <- liftEffect (N.newControl 30)
+  racing <- forkAff (work raced)
+  N.awaitStarted raced
+  completing <- forkAff (liftEffect (N.complete raced false))
+  killFiber (error "race with completion") racing
+  void (joinFiber completing)
+  N.awaitCallback raced
+  liftEffect (N.verify raced 3)
+
+  duplicate <- liftEffect (N.newControl 40)
+  N.withResource duplicate \resource -> do
+    running <- forkAff (N.operation resource)
+    N.awaitStarted duplicate
+    second <- attempt (N.operation resource)
+    case second of
+      Left reason -> check "second start rejected without poisoning mutex" (message reason == "operation already started")
+      Right _ -> throwError (error "second start unexpectedly succeeded")
+    void (liftEffect (N.complete duplicate false))
+    valueAfterMisuse <- joinFiber running
+    check "first operation survives rejected second start" (valueAfterMisuse == 123)
+    liftEffect (N.markContinued duplicate)
+  N.awaitCallback duplicate
+  liftEffect (N.verify duplicate 4)
+
+  unused <- liftEffect (N.newControl 50)
+  -- Ordinary PureScript permits this escape. Runtime state rejects later use.
+  escaped <- N.withResource unused pure
+  afterRelease <- attempt (N.operation escaped)
+  case afterRelease of
+    Left reason -> check "escaped handle is closed" (message reason == "resource already released")
+    Right _ -> throwError (error "operation after release unexpectedly succeeded")
+  liftEffect (N.verify unused 5)
+  liftEffect done

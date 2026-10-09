@@ -1,0 +1,24 @@
+module LinearLab.AdvancedBorrows.Mutable where
+import Prelude
+import Effect (Effect)
+import LinearLab.AdvancedBorrows.Api as B
+
+program :: Effect Int
+program = B.withBuffer "abcd" \buffer -> B.do
+  changed <- B.withWrite buffer \parent -> B.do
+    original <- B.checksumWrite parent
+    child <- B.reborrow parent 1 2 \view -> B.do
+      B.fill view 90
+      B.checksumWrite view
+    restored <- B.checksumWrite parent
+    halves <- B.withSplit parent 2 \left right -> B.do
+      let alias = left
+      B.fill alias 65
+      B.fill right 66
+      l <- B.checksumWrite left
+      r <- B.checksumWrite right
+      B.pure (l + r)
+    after <- B.checksumWrite parent
+    B.pure (original + child + restored + halves + after)
+  final <- B.withRead buffer B.checksum
+  B.pure (changed + final)

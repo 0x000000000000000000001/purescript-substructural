@@ -17,7 +17,8 @@ module Data.Function.Sub
   ) where
 
 import Data.Tuple (Tuple(..), fst, snd)
-import Prelude
+import Data.Void (Void)
+import Prelude (class Category, class Semigroupoid, Unit)
 
 --------------------------------------------------------------------------------
 
@@ -28,7 +29,7 @@ instance semigroupoidLinear :: Semigroupoid Sub where
   compose = composeFFI
 
 instance categoryLinear :: Category Sub where
-  id = idFFI
+  identity = idFFI
 
 infixr 4 type Sub as -*
 
@@ -50,7 +51,7 @@ foreign import liftSharedFFI :: ∀ a b. (a -> b) -> a -* b
 -- | Values which can be cloned. Instances of `Clone` must satisfy the
 -- | following laws:
 -- |
--- | - Clone: `fst' <<< clone = snd' <<< clone = id`
+-- | - Clone: `fst' <<< clone = snd' <<< clone = identity`
 class Clone a where
   clone :: a -* Tuple a a
 
@@ -71,11 +72,11 @@ foreign import unsafeDrop :: ∀ a. a -* Unit
 
 -- | Drop the second element of a tuple.
 fst' :: ∀ a b. Drop b => Tuple a b -* a
-fst' = fst'FFI drop fst snd
+fst' = fstFFI drop fst snd
 
 -- | Drop the first element of a tuple.
 snd' :: ∀ a b. Drop a => Tuple a b -* b
-snd' = snd'FFI drop fst snd
+snd' = sndFFI drop fst snd
 
 foreign import unsafeCloneFFI
   :: ∀ a
@@ -83,7 +84,7 @@ foreign import unsafeCloneFFI
   -> a
   -* Tuple a a
 
-foreign import fst'FFI
+foreign import fstFFI
   :: ∀ a b
    . (b -* Unit)
   -> (∀ l r. Tuple l r -> l)
@@ -91,7 +92,7 @@ foreign import fst'FFI
   -> Tuple a b
   -* a
 
-foreign import snd'FFI
+foreign import sndFFI
   :: ∀ a b
    . (a -* Unit)
   -> (∀ l r. Tuple l r -> l)

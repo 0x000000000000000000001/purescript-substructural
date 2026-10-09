@@ -1,0 +1,5 @@
+module LinearLab.NativeShapes.CoerceCursor where
+import LinearLab.NativeShapes.Cursor (Cursor)
+import Safe.Coerce (coerce)
+bad :: Cursor -> Array Int
+bad = coerce

@@ -1,0 +1,5 @@
+module LibraryRust.EscapeOwner where
+import Data.Function.Sub (runShared)
+import LibraryRust.Owned (Owner, make)
+bad :: Owner
+bad = runShared make 3

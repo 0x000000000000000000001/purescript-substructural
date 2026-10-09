@@ -1,0 +1,11 @@
+module LinearLab.AdvancedBorrows.ReviveExistential where
+import Prelude
+import Effect (Effect)
+import LinearLab.AdvancedBorrows.Api as B
+import LinearLab.AdvancedBorrows.Existential (escaped, unpack)
+
+bad :: Effect Int
+bad = do
+  old <- escaped
+  B.withBuffer "new" \buffer -> B.withWrite buffer \_ ->
+    unpack old B.checksumWrite

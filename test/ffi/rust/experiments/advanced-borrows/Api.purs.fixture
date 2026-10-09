@@ -1,0 +1,128 @@
+module LinearLab.AdvancedBorrows.Api
+  ( Buffer, ReadView, WriteView, Ix, Ready, Reading, Writing
+  , class Readable, parentRead
+  , pure, bind, discard, withBuffer, withRead, checksum, tailView
+  , withWrite, checksumWrite, fill, reborrow, withSplit, attempt
+  ) where
+
+import Prelude hiding (bind, discard, pure)
+import Prelude as P
+import Data.Either (Either)
+import Effect (Effect)
+import Effect.Exception (Error, try)
+
+foreign import data NativeBuffer :: Type
+foreign import data NativeView :: Type
+foreign import data NativeSplit :: Type
+
+data Ready
+data Reading :: Type -> Type -> Type
+data Reading token parent
+data Writing :: Type -> Type
+data Writing token
+
+class Readable :: Type -> Constraint
+class Readable state
+instance readableReady :: Readable Ready
+instance readableNested :: Readable (Reading token parent)
+
+
+newtype Buffer :: Type -> Type
+newtype Buffer scope = Buffer NativeBuffer
+type role Buffer nominal
+newtype ReadView :: Type -> Type -> Type
+newtype ReadView scope token = ReadView NativeView
+type role ReadView nominal nominal
+newtype WriteView :: Type -> Type -> Type
+newtype WriteView scope token = WriteView NativeView
+type role WriteView nominal nominal
+newtype Ix :: Type -> Type -> Type -> Type -> Type
+newtype Ix scope before after a = Ix (Effect a)
+type role Ix nominal nominal nominal representational
+
+foreign import rawWithBuffer :: forall a. String -> (NativeBuffer -> Effect a) -> Effect a
+foreign import rawWithRead :: forall a. NativeBuffer -> (NativeView -> Effect a) -> Effect a
+foreign import rawWithWrite :: forall a. NativeBuffer -> (NativeView -> Effect a) -> Effect a
+foreign import rawChecksum :: NativeView -> Effect Int
+foreign import rawTail :: NativeView -> Effect NativeView
+foreign import rawFill :: NativeView -> Int -> Effect Unit
+foreign import rawReborrow :: forall a. NativeView -> Int -> Int -> (NativeView -> Effect a) -> Effect a
+foreign import rawWithSplit :: forall a. NativeView -> Int -> (NativeSplit -> Effect a) -> Effect a
+foreign import rawLeft :: NativeSplit -> NativeView
+foreign import rawRight :: NativeSplit -> NativeView
+
+pure :: forall scope state a. a -> Ix scope state state a
+pure value = Ix (P.pure value)
+bind :: forall scope before middle after a b.
+  Ix scope before middle a -> (a -> Ix scope middle after b) -> Ix scope before after b
+bind (Ix first) next = Ix P.do
+  value <- first
+  case next value of
+    Ix second -> second
+discard :: forall scope before middle after a b.
+  Ix scope before middle a -> (a -> Ix scope middle after b) -> Ix scope before after b
+discard = bind
+
+withBuffer :: forall a. String -> (forall scope. Buffer scope -> Ix scope Ready Ready a) -> Effect a
+withBuffer initial use = rawWithBuffer initial \native ->
+  case use (Buffer native) of
+    Ix action -> action
+
+withRead :: forall scope parent a. Readable parent =>
+  Buffer scope ->
+  (forall token. ReadView scope token -> Ix scope (Reading token parent) (Reading token parent) a) ->
+  Ix scope parent parent a
+withRead (Buffer native) use = Ix (rawWithRead native \view ->
+  case use (ReadView view) of
+    Ix action -> action)
+
+checksum :: forall scope token parent.
+  ReadView scope token -> Ix scope (Reading token parent) (Reading token parent) Int
+checksum (ReadView native) = Ix (rawChecksum native)
+
+tailView :: forall scope token parent.
+  ReadView scope token -> Ix scope (Reading token parent) (Reading token parent) (ReadView scope token)
+tailView (ReadView native) = Ix P.do
+  tail <- rawTail native
+  P.pure (ReadView tail)
+
+withWrite :: forall scope a. Buffer scope ->
+  (forall token. WriteView scope token -> Ix scope (Writing token) (Writing token) a) ->
+  Ix scope Ready Ready a
+withWrite (Buffer native) use = Ix (rawWithWrite native \view ->
+  case use (WriteView view) of
+    Ix action -> action)
+
+checksumWrite :: forall scope token.
+  WriteView scope token -> Ix scope (Writing token) (Writing token) Int
+checksumWrite (WriteView native) = Ix (rawChecksum native)
+
+fill :: forall scope token. WriteView scope token -> Int -> Ix scope (Writing token) (Writing token) Unit
+fill (WriteView native) value = Ix (rawFill native value)
+
+reborrow :: forall scope parent a. WriteView scope parent -> Int -> Int ->
+  (forall child. WriteView scope child -> Ix scope (Writing child) (Writing child) a) ->
+  Ix scope (Writing parent) (Writing parent) a
+reborrow (WriteView native) start len use = Ix (rawReborrow native start len \view ->
+  case use (WriteView view) of
+    Ix action -> action)
+
+withSplit :: forall scope parent a. WriteView scope parent -> Int ->
+  (forall child. WriteView scope child -> WriteView scope child -> Ix scope (Writing child) (Writing child) a) ->
+  Ix scope (Writing parent) (Writing parent) a
+withSplit (WriteView native) at use = Ix (rawWithSplit native at \pair ->
+  case use (WriteView (rawLeft pair)) (WriteView (rawRight pair)) of
+    Ix action -> action)
+
+-- Catch only a state-preserving indexed action. Borrow runner RAII finalizers
+-- unwind before this catcher restores control at the original outer state.
+attempt :: forall scope state a.
+  Ix scope state state a -> Ix scope state state (Either Error a)
+attempt (Ix action) = Ix (try action)
+
+-- Shared ancestor actions can be run while an additional read lease is active.
+-- This cannot lift Ready actions or a mutable phase.
+parentRead :: forall scope token parent child a.
+  Ix scope (Reading token parent) (Reading token parent) a ->
+  Ix scope (Reading child (Reading token parent)) (Reading child (Reading token parent)) a
+parentRead (Ix action) = Ix action
